@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\LeaveRequestStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LeaveRequest extends Model
 {
@@ -29,6 +30,7 @@ class LeaveRequest extends Model
         'start_time' => 'time',
         'end_time' => 'time',
     ];
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
@@ -42,6 +44,11 @@ class LeaveRequest extends Model
     public function stage(): BelongsTo
     {
         return $this->belongsTo(Stage::class);
+    }
+
+    public function logs() : HasMany
+    {
+        return $this->hasMany(LeaveLog::class);
     }
 
 
