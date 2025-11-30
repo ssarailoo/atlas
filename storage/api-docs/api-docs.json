@@ -1,0 +1,191 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Atlas API",
+        "description": "API documentation",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/employees": {
+            "get": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Get list of employees",
+                "operationId": "6d7ae0f8f7b59680bd2b4edb04caa99d",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/EmployeeName"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EmployeePosition"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EmployeeLeaveBalance"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EmployeeLeaveBalanceMax"
+                    },
+                    {
+                        "$ref": "#/components/parameters/EmployeeLeaveBalanceMin"
+                    },
+                    {
+                        "$ref": "#/components/parameters/Pagination"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/EmployeeResource"
+                                            }
+                                        },
+                                        "meta": {
+                                            "$ref": "#/components/schemas/MetaPagination"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "EmployeeResource": {
+                "title": "Employee Resource",
+                "description": "Employee data formatted for API responses",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "position": {
+                        "type": "string",
+                        "example": "Software Engineer"
+                    },
+                    "leave_balance": {
+                        "type": "integer",
+                        "example": 14
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-05T09:30:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "MetaPagination": {
+                "properties": {
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "parameters": {
+            "EmployeeLeaveBalance": {
+                "name": "leave_balance",
+                "in": "query",
+                "description": "Exact leave balance. Cannot be combined with min/max values.",
+                "required": false,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "EmployeeLeaveBalanceMin": {
+                "name": "leave_balance[min]",
+                "in": "query",
+                "description": "Minimum leave balance. Cannot be used with exact leave_balance.",
+                "required": false,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "EmployeeLeaveBalanceMax": {
+                "name": "leave_balance[max]",
+                "in": "query",
+                "description": "Maximum leave balance. Cannot be used with exact leave_balance. If both min and max are provided, min must not exceed max.",
+                "required": false,
+                "schema": {
+                    "type": "integer"
+                }
+            },
+            "EmployeeName": {
+                "name": "name",
+                "in": "query",
+                "description": "Filter employees by exact name",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "EmployeePosition": {
+                "name": "position",
+                "in": "query",
+                "description": "Filter employees by exact position",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "Pagination": {
+                "name": "pagination",
+                "in": "query",
+                "description": "Pagination parameters",
+                "required": false,
+                "schema": {
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "minimum": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 15,
+                            "maximum": 100,
+                            "minimum": 1
+                        }
+                    },
+                    "type": "object"
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Employees",
+            "description": "Employees"
+        }
+    ]
+}
