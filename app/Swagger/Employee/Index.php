@@ -6,7 +6,7 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Get(
- *     path="/employees",
+ *     path="/api/v1/employees",
  *     tags={"Employees"},
  *     summary="Get list of employees",
  *     @OA\Parameter(ref="#/components/parameters/EmployeeName"),

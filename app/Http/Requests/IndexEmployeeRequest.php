@@ -18,7 +18,7 @@ class IndexEmployeeRequest extends FormRequest
         return [
             'name' => ['sometimes', 'string'],
             'position' => ['sometimes', 'string'],
-            'leave_balance' => ['sometimes', 'integer',LeaveBalanceRule::class],
+            'leave_balance' => ['sometimes', 'integer',new LeaveBalanceRule()],
             'leave_balance.min' => ['sometimes', 'integer'],
             'leave_balance.max' => ['sometimes', 'integer'],
         ];

@@ -6,13 +6,13 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/employees": {
+        "/api/v1/employees": {
             "get": {
                 "tags": [
                     "Employees"
                 ],
                 "summary": "Get list of employees",
-                "operationId": "6d7ae0f8f7b59680bd2b4edb04caa99d",
+                "operationId": "2e641bdc699591310bf30f24fd740289",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/EmployeeName"
