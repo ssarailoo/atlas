@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,10 @@ class Employee extends Model
         'role',
         'leave_balance',
     ];
+    protected $casts = [
+        'role' => RoleEnum::class,
+    ];
+
 
     public function manager(): BelongsTo
     {

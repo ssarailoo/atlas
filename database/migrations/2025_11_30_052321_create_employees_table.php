@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RoleEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +21,7 @@ return new class extends Migration
                 ->constrained('employees')
                 ->nullOnDelete();
 
-            $table->enum('role', ['employee', 'manager', 'hr', 'ceo']);
+            $table->enum('role', RoleEnum::getValues());
 
             $table->integer('leave_balance')->default(0);
 

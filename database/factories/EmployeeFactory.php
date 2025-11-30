@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RoleEnum;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,7 +17,7 @@ class EmployeeFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'position' => $this->faker->jobTitle(),
             'manager_id' => null,
-            'role' => $this->faker->randomElement(['employee', 'manager', 'hr', 'ceo']),
+            'role' => $this->faker->randomElement(RoleEnum::cases())->value,
             'leave_balance' => $this->faker->numberBetween(0, 30),
         ];
     }
