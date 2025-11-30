@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum LeaveTypeEnum: string
+enum LeaveRequestTypeEnum: string
 {
     case ANNUAL = 'annual';
     case SICK = 'sick';
