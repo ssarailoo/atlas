@@ -15,6 +15,7 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
         public ?string $end_time,
         public string $reason,
         public LeaveRequestTypeEnum $type,
+        public LeaveRequestStatusEnum  $status
     ) {}
 
     public static function fromRequest(array $data): static
@@ -27,6 +28,7 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
             end_time: $data['end_time'] ?? null,
             reason: $data['reason'],
             type: $data['type'],
+            status: LeaveRequestStatusEnum::PENDING_HR
         );
     }
 }
