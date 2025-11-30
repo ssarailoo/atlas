@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\LeaveRequestStatusEnum;
+use App\Enums\LeaveTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,7 @@ class LeaveRequest extends Model
     protected $fillable = [
         'employee_id',
         'approver_id',
+        'type',
         'start_date',
         'end_date',
         'start_time',
@@ -25,6 +27,7 @@ class LeaveRequest extends Model
     ];
     protected $casts = [
         'status' => LeaveRequestStatusEnum::class,
+        'type' => LeaveTypeEnum::class,
         'start_date' => 'date',
         'end_date' => 'date',
         'start_time' => 'time',
