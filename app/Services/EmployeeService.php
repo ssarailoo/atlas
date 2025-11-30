@@ -9,7 +9,7 @@ use App\QueryFilters\Employee\PositionFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pipeline\Pipeline;
 
-class EmployeeService
+readonly class EmployeeService
 {
     public function getEmployees(array $filters)
     {
