@@ -33,4 +33,32 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
             rejection_reason: null
         );
     }
+    public function withStatus(LeaveRequestStatusEnum $status): static
+    {
+        return new static(
+            employee_id: $this->employee_id,
+            start_date: $this->start_date,
+            end_date: $this->end_date,
+            start_time: $this->start_time,
+            end_time: $this->end_time,
+            reason: $this->reason,
+            type: $this->type,
+            status: $status,
+            rejection_reason: $this->rejection_reason
+        );
+    }
+    public function withRejectionReason(?string $rejectionReason): static
+    {
+        return new static(
+            employee_id: $this->employee_id,
+            start_date: $this->start_date,
+            end_date: $this->end_date,
+            start_time: $this->start_time,
+            end_time: $this->end_time,
+            reason: $this->reason,
+            type: $this->type,
+            status: $this->status,
+            rejection_reason: $rejectionReason
+        );
+    }
 }
