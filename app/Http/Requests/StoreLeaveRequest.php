@@ -34,15 +34,27 @@ class StoreLeaveRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'employee_id' => ['required', 'exists:employees,id'],
-            'leave_type'  => ['required', Rule::in(LeaveRequestTypeEnum::getValues())],
-            'start_date'  => ['required', 'date', 'after_or_equal:today'],
-            'end_date'    => ['nullable', 'date', 'after_or_equal:start_date'],
-            'start_time'  => ['nullable', 'date_format:H:i'],
-            'end_time'    => ['nullable', 'date_format:H:i'],
-            'reason'      => ['nullable', 'string', 'max:1000'],
-        ];
+        {
+            $leaveType = $this->input('leave_type');
+            $rules = [
+                'employee_id' => ['required', 'exists:employees,id'],
+                'leave_type'  => ['required', Rule::in(LeaveRequestTypeEnum::getValues())],
+                'start_date'  => ['required', 'date', 'after_or_equal:today'],
+                'reason'      => ['nullable', 'string', 'max:1000'],
+            ];
+            if ($leaveType === LeaveRequestTypeEnum::HOURLY->value) {
+                $rules['end_date'] = ['nullable', 'date', 'after_or_equal:start_date', 'required_with:start_time,end_time'];
+                $rules['start_time'] = ['required', 'date_format:H:i'];
+                $rules['end_time'] = ['required', 'date_format:H:i', 'after:start_time'];
+            }
+            else {
+                $rules['end_date'] = ['required', 'date', 'after:start_date'];
+                $rules['start_time'] = ['nullable'];
+                $rules['end_time'] = ['nullable'];
+            }
+
+            return $rules;
+        }
     }
 
 
