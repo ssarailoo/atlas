@@ -14,7 +14,8 @@ use OpenApi\Annotations as OA;
  *     @OA\Parameter(ref="#/components/parameters/EmployeeLeaveBalance"),
  *     @OA\Parameter(ref="#/components/parameters/EmployeeLeaveBalanceMax"),
  *     @OA\Parameter(ref="#/components/parameters/EmployeeLeaveBalanceMin"),
- *     @OA\Parameter(ref="#/components/parameters/Pagination"),
+ *     @OA\Parameter(ref="#/components/parameters/Page"),
+ *     @OA\Parameter(ref="#/components/parameters/PerPage"),
  *     @OA\Response(
  *         response=200,
  *         description="Successful response",

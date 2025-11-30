@@ -6,16 +6,21 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Parameter(
- *     parameter="Pagination",
- *     name="pagination",
+ *     parameter="Page",
+ *     name="page",
  *     in="query",
- *     description="Pagination parameters",
+ *     description="Page number",
  *     required=false,
- *     @OA\Schema(
- *         type="object",
- *         @OA\Property(property="page", type="integer", default=1, minimum=1),
- *         @OA\Property(property="per_page", type="integer", default=15, minimum=1, maximum=100)
- *     )
+ *     @OA\Schema(type="integer", default=1, minimum=1)
+ * )
+ *
+ * @OA\Parameter(
+ *     parameter="PerPage",
+ *     name="per_page",
+ *     in="query",
+ *     description="Number of items per page",
+ *     required=false,
+ *     @OA\Schema(type="integer", default=15, minimum=1, maximum=100)
  * )
  */
 class Pagination

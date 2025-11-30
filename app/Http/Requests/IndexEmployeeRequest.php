@@ -21,6 +21,8 @@ class IndexEmployeeRequest extends FormRequest
             'leave_balance' => ['sometimes', 'integer',new LeaveBalanceRule()],
             'leave_balance.min' => ['sometimes', 'integer'],
             'leave_balance.max' => ['sometimes', 'integer'],
+            'page' => ['sometimes', 'integer', 'min:1'],
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ];
     }
 

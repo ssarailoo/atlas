@@ -30,7 +30,10 @@
                         "$ref": "#/components/parameters/EmployeeLeaveBalanceMin"
                     },
                     {
-                        "$ref": "#/components/parameters/Pagination"
+                        "$ref": "#/components/parameters/Page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/PerPage"
                     }
                 ],
                 "responses": {
@@ -158,26 +161,27 @@
                     "type": "string"
                 }
             },
-            "Pagination": {
-                "name": "pagination",
+            "Page": {
+                "name": "page",
                 "in": "query",
-                "description": "Pagination parameters",
+                "description": "Page number",
                 "required": false,
                 "schema": {
-                    "properties": {
-                        "page": {
-                            "type": "integer",
-                            "default": 1,
-                            "minimum": 1
-                        },
-                        "per_page": {
-                            "type": "integer",
-                            "default": 15,
-                            "maximum": 100,
-                            "minimum": 1
-                        }
-                    },
-                    "type": "object"
+                    "type": "integer",
+                    "default": 1,
+                    "minimum": 1
+                }
+            },
+            "PerPage": {
+                "name": "per_page",
+                "in": "query",
+                "description": "Number of items per page",
+                "required": false,
+                "schema": {
+                    "type": "integer",
+                    "default": 15,
+                    "maximum": 100,
+                    "minimum": 1
                 }
             }
         }
