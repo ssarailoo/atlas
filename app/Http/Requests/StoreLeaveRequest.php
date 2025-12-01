@@ -43,7 +43,7 @@ class StoreLeaveRequest extends FormRequest
                 'reason'      => ['nullable', 'string', 'max:1000'],
             ];
             if ($leaveType === LeaveRequestTypeEnum::HOURLY->value) {
-                $rules['end_date'] = ['nullable', 'date', 'after_or_equal:start_date', 'required_with:start_time,end_time'];
+                $rules['end_date'] = ['nullable', 'date', 'after_or_equal:start_date'];
                 $rules['start_time'] = ['required', 'date_format:H:i'];
                 $rules['end_time'] = ['required', 'date_format:H:i', 'after:start_time'];
             }
