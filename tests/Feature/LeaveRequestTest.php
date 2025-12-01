@@ -167,7 +167,7 @@ class LeaveRequestTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_draft_when_exceeding_max_duration_for_hourly_leave()
     {
         $data = [
@@ -187,6 +187,41 @@ class LeaveRequestTest extends TestCase
             'employee_id' => $this->employee->id,
             'status' => LeaveRequestStatusEnum::DRAFT->value,
             'rejection_reason' => LeaveRejectionMessages::MAX_DURATION_EXCEEDED,
+        ]);
+    }
+
+    #[Test]
+    public function it_creates_draft_when_exceeding_monthly_limit_for_annual_leave()
+    {
+        $today = now();
+        $jalalianDate = Jalalian::fromCarbon($today);
+        $monthStart = $jalalianDate->getFirstDayOfMonth()->toCarbon();
+
+        LeaveRequest::create([
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL,
+            'status' => LeaveRequestStatusEnum::APPROVED,
+            'start_date' => $monthStart->copy()->addDays(5),
+            'end_date' => $monthStart->copy()->addDays(6),
+        ]);
+
+
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL->value,
+            'start_date' => $monthStart->copy()->addDays(10)->format('Y-m-d'),
+            'end_date' => $monthStart->copy()->addDays(11)->format('Y-m-d'),
+            'reason' => 'test',
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+
+        $this->assertDatabaseHas('leave_requests', [
+            'employee_id' => $this->employee->id,
+            'status' => LeaveRequestStatusEnum::DRAFT->value,
+            'rejection_reason' => LeaveRejectionMessages::MONTHLY_LIMIT_EXCEEDED,
         ]);
     }
 
