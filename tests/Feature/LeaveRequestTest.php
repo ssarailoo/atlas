@@ -225,4 +225,28 @@ class LeaveRequestTest extends TestCase
         ]);
     }
 
+    #[Test]
+    public function it_allows_unpaid_leave_without_balance_check()
+    {
+        $this->employee->update(['leave_balance' => 0]);
+
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::UNPAID->value,
+            'start_date' => now()->addDays(5)->format('Y-m-d'),
+            'end_date' => now()->addDays(10)->format('Y-m-d'),
+            'reason' => 'test'
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+
+        $this->assertDatabaseHas('leave_requests', [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::UNPAID->value,
+            'status' => LeaveRequestStatusEnum::PENDING_HR->value,
+        ]);
+    }
+
 }
