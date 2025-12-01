@@ -11,6 +11,6 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::prefix('leave-requests')->name('leave-requests.')->controller(LeaveRequestController::class)->group(function (){
-       Route::post('/','store') ;
+       Route::post('/','store')->name('store') ;
     });
 });
