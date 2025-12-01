@@ -48,7 +48,13 @@ abstract readonly class BaseDTO implements Arrayable, JsonSerializable
     {
         return $this->toArray();
     }
-
+    protected function cloneWith(array $changes): static
+    {
+        return new static(...array_merge(
+            get_object_vars($this),
+            $changes
+        ));
+    }
     /**
      * Create DTO from array
      */

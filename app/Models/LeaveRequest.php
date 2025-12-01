@@ -23,7 +23,8 @@ class LeaveRequest extends Model
         'reason',
         'status',
         'stage_id',
-        'rejection_reason'
+        'rejection_reason',
+        'max_stage_id'
     ];
     protected $casts = [
         'status' => LeaveRequestStatusEnum::class,
@@ -47,6 +48,10 @@ class LeaveRequest extends Model
     public function stage(): BelongsTo
     {
         return $this->belongsTo(Stage::class);
+    }
+    public function maxStage(): BelongsTo
+    {
+        return $this->belongsTo(Stage::class,'max_stage_id');
     }
 
     public function logs() : HasMany

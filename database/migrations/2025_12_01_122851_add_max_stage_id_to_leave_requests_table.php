@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leave_requests', function (Blueprint $table) {
-            $table->foreignIdFor(Stage::class,'max_stage_id')->constrained('stages');
+            $table->foreignIdFor(Stage::class,'max_stage_id')->nullable()->constrained('stages');
         });
 
     }

@@ -6,9 +6,12 @@ use App\Constants\LeaveRejectionMessages;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
 use App\Enums\LeaveRequestStatusEnum;
 use App\Enums\LeaveRequestTypeEnum;
+use App\Enums\RoleEnum;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
+use App\Models\Stage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Morilog\Jalali\Jalalian;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -24,10 +27,16 @@ readonly class LeaveRequestService
 
         if ($validationResult['is_draft']) {
             $dto = $dto->withStatus(LeaveRequestStatusEnum::DRAFT)
+                ->withMaxStage($this->getMaxStageForDraft())
                 ->withRejectionReason($validationResult['rejection_reason']);
-        }
 
+        } else {
+            $days = $this->calculateDaysDuration($dto);
+            $maxStage = $this->determineMaxStage($days);
+            $dto = $dto->withMaxStage($maxStage);
+        }
         return $this->query()->create($dto->toArray());
+
     }
 
     private function validateBusinessRules(StoreLeaveRequestDTO $data): array
@@ -40,7 +49,7 @@ readonly class LeaveRequestService
 
         if (!$this->checkThreeDayGap($data->employee_id, $data->start_date)) {
             $results['reject_completely'] = true;
-            $results['rejection_reason'] =LeaveRejectionMessages::THREE_DAY_GAP;
+            $results['rejection_reason'] = LeaveRejectionMessages::THREE_DAY_GAP;
             return $results;
         }
 
@@ -59,12 +68,23 @@ readonly class LeaveRequestService
 
         if (!$this->checkMonthlyLimits($data)) {
             $results['is_draft'] = true;
-            $results['rejection_reason'] =LeaveRejectionMessages::MONTHLY_LIMIT_EXCEEDED;
+            $results['rejection_reason'] = LeaveRejectionMessages::MONTHLY_LIMIT_EXCEEDED;
         }
 
         return $results;
     }
 
+    private function determineMaxStage(int $days)
+    {
+        return Stage::where('min_days', '<=', $days)
+            ->orderByDesc('order')
+            ->first()->id;
+    }
+
+    private function getMaxStageForDraft()
+    {
+        return Stage::where('role', RoleEnum::CEO)->first()->id;
+    }
 
     private function checkThreeDayGap(int $employeeId, string $startDate): bool
     {
@@ -78,11 +98,10 @@ readonly class LeaveRequestService
         if ($latestApprovedRequest) {
             $lastEndDate = Carbon::parse($latestApprovedRequest->end_date);
             $newStartDate = Carbon::parse($startDate);
-            return $newStartDate->diffInDays($lastEndDate,true) >= 3;
+            return $newStartDate->diffInDays($lastEndDate, true) >= 3;
         }
         return true;
     }
-
 
 
     private function checkLeaveBalance(StoreLeaveRequestDTO $data): bool
@@ -138,8 +157,7 @@ readonly class LeaveRequestService
 
 
         if ($dto->type === LeaveRequestTypeEnum::HOURLY) {
-            $totalHours = $currentMonthLeaves->sum(fn($leave) =>
-            $this->calculateHourlyDuration($leave)
+            $totalHours = $currentMonthLeaves->sum(fn($leave) => $this->calculateHourlyDuration($leave)
             );
             $newHours = $this->calculateHourlyDuration($dto);
 
@@ -147,8 +165,7 @@ readonly class LeaveRequestService
         }
 
         if ($dto->type === LeaveRequestTypeEnum::ANNUAL) {
-            $totalDays = $currentMonthLeaves->sum(fn($leave) =>
-            $this->calculateDaysDuration($leave)
+            $totalDays = $currentMonthLeaves->sum(fn($leave) => $this->calculateDaysDuration($leave)
             );
             $newDays = $this->calculateDaysDuration($dto);
 
@@ -157,8 +174,7 @@ readonly class LeaveRequestService
 
 
         if ($dto->type === LeaveRequestTypeEnum::SICK) {
-            $totalDays = $currentMonthLeaves->sum(fn($leave) =>
-            $this->calculateDaysDuration($leave)
+            $totalDays = $currentMonthLeaves->sum(fn($leave) => $this->calculateDaysDuration($leave)
             );
             $newDays = $this->calculateDaysDuration($dto);
 
