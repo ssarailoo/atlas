@@ -13,7 +13,7 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
         public ?string $end_date,
         public ?string $start_time,
         public ?string $end_time,
-        public string $reason,
+        public ?string $reason,
         public LeaveRequestTypeEnum $type,
         public LeaveRequestStatusEnum  $status,
         public ?string $rejection_reason = null
@@ -27,8 +27,8 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
             end_date: $data['end_date'] ?? null,
             start_time: $data['start_time'] ?? null,
             end_time: $data['end_time'] ?? null,
-            reason: $data['reason'],
-            type: $data['type'],
+            reason: $data['reason']??null,
+            type: LeaveRequestTypeEnum::from($data['type']),
             status: LeaveRequestStatusEnum::PENDING_HR,
             rejection_reason: null
         );

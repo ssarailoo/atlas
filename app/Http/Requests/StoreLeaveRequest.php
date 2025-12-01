@@ -35,10 +35,10 @@ class StoreLeaveRequest extends FormRequest
     public function rules(): array
     {
         {
-            $leaveType = $this->input('leave_type');
+            $leaveType = $this->input('type');
             $rules = [
                 'employee_id' => ['required', 'exists:employees,id'],
-                'leave_type'  => ['required', Rule::in(LeaveRequestTypeEnum::getValues())],
+                'type'  => ['required', Rule::in(LeaveRequestTypeEnum::getValues())],
                 'start_date'  => ['required', 'date', 'after_or_equal:today'],
                 'reason'      => ['nullable', 'string', 'max:1000'],
             ];

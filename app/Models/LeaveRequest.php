@@ -30,8 +30,8 @@ class LeaveRequest extends Model
         'type' => LeaveRequestTypeEnum::class,
         'start_date' => 'date',
         'end_date' => 'date',
-        'start_time' => 'time',
-        'end_time' => 'time',
+        'start_time' => 'string',
+        'end_time' => 'string',
     ];
 
     public function employee(): BelongsTo

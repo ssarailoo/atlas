@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignIdFor(Employee::class, 'employee_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Employee::class, 'approver_id')->nullable()->constrained()->nullOnDelete();
             $table->date('start_date');
-            $table->date('end_date');
+            $table->date('end_date')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
-            $table->text('reason');
+            $table->text('reason')->nullable();
             $table->enum('status', LeaveRequestStatusEnum::getValues())->default(LeaveRequestStatusEnum::DRAFT);
-            $table->foreignIdFor(Stage::class, 'stage_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Stage::class, 'stage_id')->default(1)->constrained()->cascadeOnDelete();
             $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
