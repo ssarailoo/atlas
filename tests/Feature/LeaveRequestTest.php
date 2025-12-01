@@ -120,7 +120,7 @@ class LeaveRequestTest extends TestCase
         $this->withoutExceptionHandling();
 
         $lastStart = now()->subDays(10)->startOfDay();
-        $lastEnd   = $lastStart->copy()->addDay();
+        $lastEnd = $lastStart->copy()->addDay();
 
         LeaveRequest::create([
             'employee_id' => $this->employee->id,
@@ -131,7 +131,7 @@ class LeaveRequestTest extends TestCase
         ]);
 
         $newStart = now()->addDay()->format('Y-m-d');
-        $newEnd   = now()->addDays(2)->format('Y-m-d');
+        $newEnd = now()->addDays(2)->format('Y-m-d');
 
         $data = [
             'employee_id' => $this->employee->id,
@@ -146,5 +146,48 @@ class LeaveRequestTest extends TestCase
         $response->assertStatus(Response::HTTP_CREATED);
     }
 
+    #[Test]
+    public function it_rejects_annual_leave_when_insufficient_balance()
+    {
+        $this->employee->update(['leave_balance' => 2]);
+
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL->value,
+            'start_date' => now()->addDays(5)->format('Y-m-d'),
+            'end_date' => now()->addDays(7)->format('Y-m-d'),
+            'reason' => 'test',
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN)
+            ->assertJson([
+                'message' => LeaveRejectionMessages::INSUFFICIENT_BALANCE,
+            ]);
+    }
+
+    /** @test */
+    public function it_creates_draft_when_exceeding_max_duration_for_hourly_leave()
+    {
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::HOURLY->value,
+            'start_date' => now()->addDays(5)->format('Y-m-d'),
+            'start_time' => '08:00',
+            'end_time' => '18:00',
+            'reason' => 'test',
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+
+        $this->assertDatabaseHas('leave_requests', [
+            'employee_id' => $this->employee->id,
+            'status' => LeaveRequestStatusEnum::DRAFT->value,
+            'rejection_reason' => LeaveRejectionMessages::MAX_DURATION_EXCEEDED,
+        ]);
+    }
 
 }
