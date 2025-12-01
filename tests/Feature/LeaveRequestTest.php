@@ -248,5 +248,65 @@ class LeaveRequestTest extends TestCase
             'status' => LeaveRequestStatusEnum::PENDING_HR->value,
         ]);
     }
+    #[Test]
+    public function it_does_not_count_rejected_leaves_in_monthly_limit()
+    {
+        $today = now();
+        $jalalianDate = Jalalian::fromCarbon($today);
+        $monthStart = $jalalianDate->getFirstDayOfMonth()->toCarbon();
 
+        LeaveRequest::create([
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL,
+            'status' => LeaveRequestStatusEnum::REJECTED,
+            'start_date' => $monthStart->copy()->addDays(1),
+            'end_date' => $monthStart->copy()->addDays(5),
+        ]);
+
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL->value,
+            'start_date' => $monthStart->copy()->addDays(10)->format('Y-m-d'),
+            'end_date' => $monthStart->copy()->addDays(11)->format('Y-m-d'),
+            'reason' => 'test',
+        ];
+        $response = $this->postJson($this->storeRoute, $data);
+        $response->assertStatus(Response::HTTP_CREATED);
+        $this->assertDatabaseHas('leave_requests', [
+            'employee_id' => $this->employee->id,
+            'status' => LeaveRequestStatusEnum::PENDING_HR->value,
+        ]);
+    }
+
+
+    #[Test]
+    public function it_requires_end_date_for_non_hourly_leave()
+    {
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL->value,
+            'start_date' => now()->addDays(5)->format('Y-m-d'),
+            'reason' => 'test',
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors('end_date');
+    }
+
+    #[Test]
+    public function it_requires_start_time_and_end_time_for_hourly_leave()
+    {
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::HOURLY->value,
+            'start_date' => now()->addDays(5)->format('Y-m-d'),
+            'reason' => 'ملاقات پزشک',
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+            ->assertJsonValidationErrors(['start_time', 'end_time']);
+    }
 }
