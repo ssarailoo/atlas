@@ -93,7 +93,7 @@ class LeaveRequestTest extends TestCase
         LeaveRequest::create([
             'employee_id' => $this->employee->id,
             'status' => LeaveRequestStatusEnum::APPROVED,
-            'start_date' => now()->subDays(5),
+            'start_date' => now()->subDays(4),
             'end_date' => now()->subDays(2),
             'type' => LeaveRequestTypeEnum::ANNUAL,
         ]);
@@ -113,5 +113,38 @@ class LeaveRequestTest extends TestCase
                 'message' => LeaveRejectionMessages::THREE_DAY_GAP,
             ]);
     }
+
+    #[Test]
+    public function it_allows_request_when_three_day_gap_passed()
+    {
+        $this->withoutExceptionHandling();
+
+        $lastStart = now()->subDays(10)->startOfDay();
+        $lastEnd   = $lastStart->copy()->addDay();
+
+        LeaveRequest::create([
+            'employee_id' => $this->employee->id,
+            'status' => LeaveRequestStatusEnum::APPROVED,
+            'start_date' => $lastStart,
+            'end_date' => $lastEnd,
+            'type' => LeaveRequestTypeEnum::ANNUAL,
+        ]);
+
+        $newStart = now()->addDay()->format('Y-m-d');
+        $newEnd   = now()->addDays(2)->format('Y-m-d');
+
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL->value,
+            'start_date' => $newStart,
+            'end_date' => $newEnd,
+            'reason' => 'test',
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+    }
+
 
 }

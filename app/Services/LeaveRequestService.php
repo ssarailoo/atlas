@@ -38,7 +38,6 @@ readonly class LeaveRequestService
             'rejection_reason' => null
         ];
 
-
         if (!$this->checkThreeDayGap($data->employee_id, $data->start_date)) {
             $results['reject_completely'] = true;
             $results['rejection_reason'] =LeaveRejectionMessages::THREE_DAY_GAP;
@@ -69,6 +68,7 @@ readonly class LeaveRequestService
 
     private function checkThreeDayGap(int $employeeId, string $startDate): bool
     {
+
         $latestApprovedRequest = $this->query()
             ->where('employee_id', $employeeId)
             ->where('status', LeaveRequestStatusEnum::APPROVED)
@@ -78,13 +78,11 @@ readonly class LeaveRequestService
         if ($latestApprovedRequest) {
             $lastEndDate = Carbon::parse($latestApprovedRequest->end_date);
             $newStartDate = Carbon::parse($startDate);
-
-
-            return $newStartDate->diffInDays($lastEndDate) >= 3;
+            return $newStartDate->diffInDays($lastEndDate,true) >= 3;
         }
-
         return true;
     }
+
 
 
     private function checkLeaveBalance(StoreLeaveRequestDTO $data): bool

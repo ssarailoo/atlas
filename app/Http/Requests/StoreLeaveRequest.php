@@ -18,16 +18,22 @@ class StoreLeaveRequest extends FormRequest
     }
     protected function prepareForValidation(): void
     {
-        if ($this->filled('start_date')) {
+        if ($this->filled('start_date') && !$this->isGregorian($this->start_date)) {
             $this->merge([
-                'start_date' => Jalalian::fromFormat('Y-m-d', $this->start_date)->toCarbon()
+                'start_date' => Jalalian::fromFormat('Y-m-d', $this->start_date)->toCarbon()->format('Y-m-d')
             ]);
         }
-        if ($this->filled('end_date')) {
+
+        if ($this->filled('end_date') && !$this->isGregorian($this->end_date)) {
             $this->merge([
-                'end_date' => Jalalian::fromFormat('Y-m-d', $this->end_date)->toCarbon()
+                'end_date' => Jalalian::fromFormat('Y-m-d', $this->end_date)->toCarbon()->format('Y-m-d')
             ]);
         }
+    }
+
+    private function isGregorian(string $date): bool
+    {
+        return intval(substr($date, 0, 4)) > 1600;
     }
     /**
      * Get the validation rules that apply to the request.
