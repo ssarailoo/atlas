@@ -19,6 +19,7 @@ use Tests\TestCase;
 class LeaveRequestTest extends TestCase
 {
     use RefreshDatabase;
+
     protected bool $seed = true;
     private Employee $employee;
     private string $storeRoute;
@@ -33,7 +34,7 @@ class LeaveRequestTest extends TestCase
             "role" => RoleEnum::EMPLOYEE,
             'leave_balance' => 30,
         ]);
-        $this->storeRoute=route("leave-requests.store");
+        $this->storeRoute = route("leave-requests.store");
     }
 
     #[Test]
@@ -83,6 +84,34 @@ class LeaveRequestTest extends TestCase
             'start_time' => '09:00:00',
             'end_time' => '12:00:00',
         ]);
+    }
+
+    #[Test]
+    public function it_rejects_request_when_three_day_gap_not_passed()
+    {
+
+        LeaveRequest::create([
+            'employee_id' => $this->employee->id,
+            'status' => LeaveRequestStatusEnum::APPROVED,
+            'start_date' => now()->subDays(5),
+            'end_date' => now()->subDays(2),
+            'type' => LeaveRequestTypeEnum::ANNUAL,
+        ]);
+
+        $data = [
+            'employee_id' => $this->employee->id,
+            'type' => LeaveRequestTypeEnum::ANNUAL->value,
+            'start_date' => now()->format('Y-m-d'),
+            'end_date' => now()->addDays(2)->format('Y-m-d'),
+            'reason' => 'test',
+        ];
+
+        $response = $this->postJson($this->storeRoute, $data);
+
+        $response->assertStatus(Response::HTTP_FORBIDDEN)
+            ->assertJson([
+                'message' => LeaveRejectionMessages::THREE_DAY_GAP,
+            ]);
     }
 
 }
