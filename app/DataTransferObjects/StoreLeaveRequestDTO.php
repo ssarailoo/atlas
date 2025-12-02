@@ -17,7 +17,8 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
         public LeaveRequestTypeEnum $type,
         public LeaveRequestStatusEnum  $status,
         public ?string $rejection_reason = null,
-        public ?int $max_stage_id = null
+        public ?int $max_stage_id = null,
+        public int $stage_id=1,
     ) {}
 
     public static function fromRequest(array $data): static
