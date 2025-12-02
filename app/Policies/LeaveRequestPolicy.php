@@ -42,7 +42,7 @@ class LeaveRequestPolicy
         $requiredRole = $leave->stage->role;
 
 
-        if ($requiredRole === RoleEnum::HR) {
+        if ($requiredRole === RoleEnum::HR->value) {
             if ($user->role !== RoleEnum::HR) {
                 return Response::deny("Only HR can {$action} this leave request.")
                     ->withStatus(HttpResponse::HTTP_FORBIDDEN);
@@ -51,7 +51,7 @@ class LeaveRequestPolicy
         }
 
 
-        if ($requiredRole === RoleEnum::MANAGER) {
+        if ($requiredRole === RoleEnum::MANAGER->value) {
             if ($user->role !== RoleEnum::MANAGER) {
                 return Response::deny("Only managers can {$action} this leave request.")
                     ->withStatus(HttpResponse::HTTP_FORBIDDEN);

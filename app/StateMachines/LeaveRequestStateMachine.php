@@ -71,9 +71,9 @@ readonly class LeaveRequestStateMachine
     private function statusForStage(Stage $stage): LeaveRequestStatusEnum
     {
         return match ($stage->role) {
-            RoleEnum::HR => LeaveRequestStatusEnum::PENDING_HR,
-            RoleEnum::MANAGER => LeaveRequestStatusEnum::PENDING_MANAGER,
-            RoleEnum::CEO => LeaveRequestStatusEnum::PENDING_CEO,
+            RoleEnum::HR->value => LeaveRequestStatusEnum::PENDING_HR,
+            RoleEnum::MANAGER->value => LeaveRequestStatusEnum::PENDING_MANAGER,
+            RoleEnum::CEO->value => LeaveRequestStatusEnum::PENDING_CEO,
         };
     }
 }
