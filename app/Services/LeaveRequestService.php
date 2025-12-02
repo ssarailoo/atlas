@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\LeaveRejectionMessages;
+use App\DataTransferObjects\ProcessLeaveRequestDTO;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
 use App\Enums\LeaveRequestStatusEnum;
 use App\Enums\LeaveRequestTypeEnum;
@@ -10,6 +11,7 @@ use App\Enums\RoleEnum;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\Stage;
+use App\StateMachines\LeaveRequestStateMachine;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Morilog\Jalali\Jalalian;
@@ -39,7 +41,24 @@ readonly class LeaveRequestService
         return $this->query()->create($dto->toArray());
 
     }
+    public function approve(LeaveRequest $leave, ProcessLeaveRequestDTO $dto): LeaveRequest
+    {
+        $approver = Employee::findOrFail($dto->approver_id);
+        $sm = new LeaveRequestStateMachine($leave, $approver);
 
+        return $sm->approve();
+    }
+
+    public function reject(LeaveRequest $leave, ProcessLeaveRequestDTO $dto): LeaveRequest
+    {
+        $approver = Employee::findOrFail($dto->approver_id);
+
+        $sm = new LeaveRequestStateMachine($leave, $approver);
+
+        return $sm->reject(
+            reason: $dto->rejection_reason ?? 'Rejected by approver'
+        );
+    }
     private function validateBusinessRules(StoreLeaveRequestDTO $data): array
     {
         $results = [
