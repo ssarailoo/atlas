@@ -49,4 +49,8 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
     {
         return $this->cloneWith(['max_stage_id' => $stageId]);
     }
+    public function withStageId(int $stageId): static
+    {
+        return $this->cloneWith(['stage_id' => $stageId]);
+    }
 }

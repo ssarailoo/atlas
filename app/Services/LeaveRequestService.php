@@ -27,7 +27,8 @@ readonly class LeaveRequestService
 
         if ($validationResult['is_draft']) {
             $dto = $dto->withStatus(LeaveRequestStatusEnum::DRAFT)
-                ->withMaxStage($this->getMaxStageForDraft())
+                ->withStageId($this->getStageForDraft())
+                ->withMaxStage($this->getStageForDraft())
                 ->withRejectionReason($validationResult['rejection_reason']);
 
         } else {
@@ -81,7 +82,7 @@ readonly class LeaveRequestService
             ->first()->id;
     }
 
-    private function getMaxStageForDraft()
+    private function getStageForDraft()
     {
         return Stage::where('role', RoleEnum::CEO)->first()->id;
     }
