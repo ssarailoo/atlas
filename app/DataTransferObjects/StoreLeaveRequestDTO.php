@@ -16,7 +16,9 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
         public ?string $reason,
         public LeaveRequestTypeEnum $type,
         public LeaveRequestStatusEnum  $status,
-        public ?string $rejection_reason = null
+        public ?string $rejection_reason = null,
+        public ?int $max_stage_id = null,
+        public int $stage_id=1,
     ) {}
 
     public static function fromRequest(array $data): static
@@ -30,35 +32,26 @@ readonly class StoreLeaveRequestDTO extends BaseDTO
             reason: $data['reason']??null,
             type: LeaveRequestTypeEnum::from($data['type']),
             status: LeaveRequestStatusEnum::PENDING_HR,
-            rejection_reason: null
+            rejection_reason: null,
+            max_stage_id: null
         );
     }
     public function withStatus(LeaveRequestStatusEnum $status): static
     {
-        return new static(
-            employee_id: $this->employee_id,
-            start_date: $this->start_date,
-            end_date: $this->end_date,
-            start_time: $this->start_time,
-            end_time: $this->end_time,
-            reason: $this->reason,
-            type: $this->type,
-            status: $status,
-            rejection_reason: $this->rejection_reason
-        );
+        return $this->cloneWith(['status' => $status]);
     }
-    public function withRejectionReason(?string $rejectionReason): static
+
+    public function withRejectionReason(?string $reason): static
     {
-        return new static(
-            employee_id: $this->employee_id,
-            start_date: $this->start_date,
-            end_date: $this->end_date,
-            start_time: $this->start_time,
-            end_time: $this->end_time,
-            reason: $this->reason,
-            type: $this->type,
-            status: $this->status,
-            rejection_reason: $rejectionReason
-        );
+        return $this->cloneWith(['rejection_reason' => $reason]);
+    }
+
+    public function withMaxStage(int $stageId): static
+    {
+        return $this->cloneWith(['max_stage_id' => $stageId]);
+    }
+    public function withStageId(int $stageId): static
+    {
+        return $this->cloneWith(['stage_id' => $stageId]);
     }
 }

@@ -301,7 +301,7 @@ class LeaveRequestTest extends TestCase
             'employee_id' => $this->employee->id,
             'type' => LeaveRequestTypeEnum::HOURLY->value,
             'start_date' => now()->addDays(5)->format('Y-m-d'),
-            'reason' => 'ملاقات پزشک',
+            'reason' => 'test',
         ];
 
         $response = $this->postJson($this->storeRoute, $data);

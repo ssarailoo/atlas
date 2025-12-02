@@ -2,16 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants\LeaveRequestApprovalEvent;
+use App\DataTransferObjects\ProcessLeaveRequestDTO;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
+use App\Http\Requests\ProcessLeaveRequest;
 use App\Http\Requests\StoreLeaveRequest;
+use App\Http\Resources\LeaveRequestProcessResource;
 use App\Http\Resources\LeaveRequestStoreResource;
+use App\Models\Employee;
+use App\Models\LeaveRequest;
 use App\Services\LeaveRequestService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
 class LeaveRequestController extends Controller
 {
-    public function __construct(readonly  private LeaveRequestService $service)
+    public function __construct(readonly private LeaveRequestService $service)
     {
 
     }
@@ -25,5 +32,25 @@ class LeaveRequestController extends Controller
         return (new LeaveRequestStoreResource($leaveRequest))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);
+    }
+
+    public function approve(ProcessLeaveRequest $request, LeaveRequest $leave)
+    {
+        $approver = Employee::find($request->approver_id);
+        Gate::forUser($approver)->authorize(LeaveRequestApprovalEvent::APPROVE, $leave);
+        $dto = ProcessLeaveRequestDTO::fromRequest($request->validated());
+        $updated = $this->service->approve($leave, $dto);
+
+        return (new LeaveRequestProcessResource($updated))->response();
+    }
+
+    public function reject(ProcessLeaveRequest $request, LeaveRequest $leave)
+    {
+        $approver = Employee::find($request->approver_id);
+        Gate::forUser($approver)->authorize(LeaveRequestApprovalEvent::APPROVE, $leave);
+        $dto = ProcessLeaveRequestDTO::fromRequest($request->validated());
+        $updated = $this->service->reject($leave, $dto);
+
+        return (new LeaveRequestProcessResource($updated))->response();
     }
 }
