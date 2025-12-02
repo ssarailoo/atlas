@@ -7,6 +7,7 @@ use App\DataTransferObjects\ProcessLeaveRequestDTO;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
 use App\Http\Requests\ProcessLeaveRequest;
 use App\Http\Requests\StoreLeaveRequest;
+use App\Http\Resources\LeaveRequestProcessResource;
 use App\Http\Resources\LeaveRequestStoreResource;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
@@ -38,9 +39,9 @@ class LeaveRequestController extends Controller
         $approver = Employee::find($request->approver_id);
         Gate::forUser($approver)->authorize(LeaveRequestApprovalEvent::APPROVE, $leave);
         $dto = ProcessLeaveRequestDTO::fromRequest($request->validated());
-        $result = $this->service->approve($leave, $dto);
+        $updated = $this->service->approve($leave, $dto);
 
-        return response()->json($result);
+        return (new LeaveRequestProcessResource($updated))->response();
     }
 
     public function reject(ProcessLeaveRequest $request, LeaveRequest $leave)
@@ -48,8 +49,8 @@ class LeaveRequestController extends Controller
         $approver = Employee::find($request->approver_id);
         Gate::forUser($approver)->authorize(LeaveRequestApprovalEvent::APPROVE, $leave);
         $dto = ProcessLeaveRequestDTO::fromRequest($request->validated());
-        $result = $this->service->reject($leave, $dto);
+        $updated = $this->service->reject($leave, $dto);
 
-        return response()->json($result);
+        return (new LeaveRequestProcessResource($updated))->response();
     }
 }
