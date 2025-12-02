@@ -12,5 +12,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('leave-requests')->name('leave-requests.')->controller(LeaveRequestController::class)->group(function (){
        Route::post('/','store')->name('store') ;
+       Route::post('/{leave}/approve','approve')->name('approve') ;
+       Route::post('/{leave}/reject','reject')->name('reject') ;
     });
 });
