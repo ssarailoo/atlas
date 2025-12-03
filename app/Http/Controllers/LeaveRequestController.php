@@ -9,6 +9,7 @@ use App\DataTransferObjects\StoreLeaveRequestDTO;
 use App\Http\Requests\IndexLeaveRequestOfEmployeeReqeust;
 use App\Http\Requests\ProcessLeaveRequest;
 use App\Http\Requests\StoreLeaveRequest;
+use App\Http\Resources\LeaveRequestIndexResource;
 use App\Http\Resources\LeaveRequestProcessResource;
 use App\Http\Resources\LeaveRequestStoreResource;
 use App\Models\Employee;
@@ -60,8 +61,6 @@ class LeaveRequestController extends Controller
     {
         $dto = IndexLeaveRequestOfEmployeeDTO::fromRequest($request->validated());
         $leaveRequests = $this->service->getLeaveRequestsOfEmployee($dto);
-        return \response()->json([
-            'data'=>$leaveRequests
-        ]);
+        return  LeaveRequestIndexResource::collection($leaveRequests)->response();
     }
 }
