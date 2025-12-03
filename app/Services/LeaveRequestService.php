@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Constants\LeaveConstant;
 use App\Constants\LeaveRejectionMessages;
+use App\Constants\TotalAnnualLeaves;
+use App\DataTransferObjects\IndexLeaveRequestOfEmployeeDTO;
 use App\DataTransferObjects\ProcessLeaveRequestDTO;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
 use App\Enums\LeaveRequestStatusEnum;
@@ -11,7 +14,9 @@ use App\Enums\RoleEnum;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\Stage;
+use App\QueryFilters\LeaveReqeust\StatusFilter;
 use App\StateMachines\LeaveRequestStateMachine;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Morilog\Jalali\Jalalian;
@@ -41,6 +46,7 @@ readonly class LeaveRequestService
         return $this->query()->create($dto->toArray());
 
     }
+
     public function approve(LeaveRequest $leave, ProcessLeaveRequestDTO $dto): LeaveRequest
     {
         $approver = Employee::findOrFail($dto->approver_id);
@@ -59,6 +65,30 @@ readonly class LeaveRequestService
             reason: $dto->rejection_reason ?? 'Rejected by approver'
         );
     }
+
+    public function getLeaveRequestsOfEmployee(IndexLeaveRequestOfEmployeeDTO $dto)
+    {
+        $query = $this->query();
+        $pipelineFilters = $this->getPipelineFilters();
+
+        return app(Pipeline::class)
+            ->send($query)
+            ->through($pipelineFilters)
+            ->thenReturn()
+            ->get();
+    }
+
+    public function getBalanceOfEmployee(int $employeeId): array
+    {
+        $leaveBalance = $this->getLeaveBalanceOfEmployee($employeeId);
+        $totalLeaves = LeaveConstant::TOTAL_ANNUAL - $leaveBalance;
+        return [
+            "employee_id" => $employeeId,
+            "total_leaves" => $totalLeaves,
+            "remaining_balance" => $leaveBalance
+        ];
+    }
+
     private function validateBusinessRules(StoreLeaveRequestDTO $data): array
     {
         $results = [
@@ -226,8 +256,22 @@ readonly class LeaveRequestService
         return 0;
     }
 
+    private function getLeaveBalanceOfEmployee(int $employeeId)
+    {
+        return Employee::query()->find($employeeId)->leave_balance;
+    }
+
+    private function getPipelineFilters(): array
+    {
+        return [
+            StatusFilter::class
+        ];
+    }
+
     private function query(): Builder
     {
         return LeaveRequest::query();
     }
+
+
 }
