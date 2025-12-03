@@ -15,6 +15,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/{leave}/approve', 'approve')->name('approve');
         Route::post('/{leave}/reject', 'reject')->name('reject');
         Route::match(['get', 'post'], '/reports', 'indexOfEmployee')->name('index-of-employee');
+        Route::get("/reports/{employee}", "showBalanceOfEmployee")->name('show-balance-of-employee');
 
     });
 });

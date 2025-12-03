@@ -64,4 +64,12 @@ class LeaveRequestController extends Controller
         return LeaveRequestIndexResource::collection($leaveRequests)->response();
 
     }
+
+    public function showBalanceOfEmployee(Employee $employee)
+    {
+        $result = $this->service->getBalanceOfEmployee($employee->id);
+        return response()->json([
+            "data" => $result
+        ]);
+    }
 }
