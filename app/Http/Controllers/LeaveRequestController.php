@@ -61,6 +61,7 @@ class LeaveRequestController extends Controller
     {
         $dto = IndexLeaveRequestOfEmployeeDTO::fromRequest($request->validated());
         $leaveRequests = $this->service->getLeaveRequestsOfEmployee($dto);
-        return  LeaveRequestIndexResource::collection($leaveRequests)->response();
+        return LeaveRequestIndexResource::collection($leaveRequests)->response();
+
     }
 }

@@ -14,5 +14,6 @@ Route::prefix('v1')->group(function () {
        Route::post('/','store')->name('store') ;
        Route::post('/{leave}/approve','approve')->name('approve') ;
        Route::post('/{leave}/reject','reject')->name('reject') ;
+       Route::post('/reports','indexOfEmployee')->name('index-of-employee');
     });
 });

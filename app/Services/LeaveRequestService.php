@@ -73,8 +73,7 @@ readonly class LeaveRequestService
             ->send($query)
             ->through($pipelineFilters)
             ->thenReturn()
-            ->paginate($filters['per_page'] ?? 15)
-            ->appends(request()->query());
+            ->get();
     }
 
     private function validateBusinessRules(StoreLeaveRequestDTO $data): array
