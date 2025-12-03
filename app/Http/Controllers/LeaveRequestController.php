@@ -47,7 +47,7 @@ class LeaveRequestController extends Controller
     public function reject(ProcessLeaveRequest $request, LeaveRequest $leave)
     {
         $approver = Employee::find($request->approver_id);
-        Gate::forUser($approver)->authorize(LeaveRequestApprovalEvent::APPROVE, $leave);
+        Gate::forUser($approver)->authorize(LeaveRequestApprovalEvent::REJECT, $leave);
         $dto = ProcessLeaveRequestDTO::fromRequest($request->validated());
         $updated = $this->service->reject($leave, $dto);
 

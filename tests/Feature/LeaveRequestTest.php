@@ -209,8 +209,8 @@ class LeaveRequestTest extends TestCase
         $data = [
             'employee_id' => $this->employee->id,
             'type' => LeaveRequestTypeEnum::ANNUAL->value,
-            'start_date' => $monthStart->copy()->addDays(10)->format('Y-m-d'),
-            'end_date' => $monthStart->copy()->addDays(11)->format('Y-m-d'),
+            'start_date' => $today->format('Y-m-d'),
+            'end_date' => $today->addDay()->format('Y-m-d'),
             'reason' => 'test',
         ];
 
@@ -266,8 +266,8 @@ class LeaveRequestTest extends TestCase
         $data = [
             'employee_id' => $this->employee->id,
             'type' => LeaveRequestTypeEnum::ANNUAL->value,
-            'start_date' => $monthStart->copy()->addDays(10)->format('Y-m-d'),
-            'end_date' => $monthStart->copy()->addDays(11)->format('Y-m-d'),
+            'start_date' => $today->format('Y-m-d'),
+            'end_date' => $today->addDay()->format('Y-m-d'),
             'reason' => 'test',
         ];
         $response = $this->postJson($this->storeRoute, $data);

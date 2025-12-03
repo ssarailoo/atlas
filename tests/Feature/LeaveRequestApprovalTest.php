@@ -10,7 +10,6 @@ use App\Models\LeaveRequest;
 use App\Models\Stage;
 use Database\Seeders\StageSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -78,7 +77,7 @@ class LeaveRequestApprovalTest extends TestCase
 
         $hrStage = Stage::where('role', RoleEnum::HR->value)->first();
         $leave = $this->makeLeave($employee, $hrStage);
-        Log::info('leave', $leave->toArray());
+
 
         $response = $this->postJson(route('leave-requests.approve', $leave), [
             'approver_id' => $hr->id,
