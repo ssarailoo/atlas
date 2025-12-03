@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Constants\LeaveRequestApprovalEvent;
+use App\DataTransferObjects\IndexLeaveRequestOfEmployeeDTO;
 use App\DataTransferObjects\ProcessLeaveRequestDTO;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
+use App\Http\Requests\IndexLeaveRequestOfEmployeeReqeust;
 use App\Http\Requests\ProcessLeaveRequest;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Http\Resources\LeaveRequestProcessResource;
@@ -52,5 +54,14 @@ class LeaveRequestController extends Controller
         $updated = $this->service->reject($leave, $dto);
 
         return (new LeaveRequestProcessResource($updated))->response();
+    }
+
+    public function indexOfEmployee(IndexLeaveRequestOfEmployeeReqeust $request)
+    {
+        $dto = IndexLeaveRequestOfEmployeeDTO::fromRequest($request->validated());
+        $leaveRequests = $this->service->getLeaveRequestsOfEmployee($dto);
+        return \response()->json([
+            'data'=>$leaveRequests
+        ]);
     }
 }
