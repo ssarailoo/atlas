@@ -5,7 +5,7 @@ namespace App\QueryFilters\LeaveReqeust;
 use App\QueryFilters\Filter;
 use Illuminate\Database\Eloquent\Builder;
 
-class Status extends Filter
+class StatusFilter extends Filter
 {
     protected function apply(Builder $query, $value)
     {

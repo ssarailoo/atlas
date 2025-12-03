@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Constants\LeaveRejectionMessages;
+use App\DataTransferObjects\IndexLeaveRequestOfEmployeeDTO;
 use App\DataTransferObjects\ProcessLeaveRequestDTO;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
 use App\Enums\LeaveRequestStatusEnum;
@@ -11,7 +12,9 @@ use App\Enums\RoleEnum;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\Stage;
+use App\QueryFilters\LeaveReqeust\StatusFilter;
 use App\StateMachines\LeaveRequestStateMachine;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Morilog\Jalali\Jalalian;
@@ -41,6 +44,7 @@ readonly class LeaveRequestService
         return $this->query()->create($dto->toArray());
 
     }
+
     public function approve(LeaveRequest $leave, ProcessLeaveRequestDTO $dto): LeaveRequest
     {
         $approver = Employee::findOrFail($dto->approver_id);
@@ -59,6 +63,20 @@ readonly class LeaveRequestService
             reason: $dto->rejection_reason ?? 'Rejected by approver'
         );
     }
+
+    public function getLeaveRequestsOfEmployee(IndexLeaveRequestOfEmployeeDTO $dto)
+    {
+        $query = $this->query();
+        $pipelineFilters = $this->getPipelineFilters();
+
+        return app(Pipeline::class)
+            ->send($query)
+            ->through($pipelineFilters)
+            ->thenReturn()
+            ->paginate($filters['per_page'] ?? 15)
+            ->appends(request()->query());
+    }
+
     private function validateBusinessRules(StoreLeaveRequestDTO $data): array
     {
         $results = [
@@ -226,8 +244,17 @@ readonly class LeaveRequestService
         return 0;
     }
 
+    private function getPipelineFilters()
+    {
+        return [
+            StatusFilter::class
+        ];
+    }
+
     private function query(): Builder
     {
         return LeaveRequest::query();
     }
+
+
 }
