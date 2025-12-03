@@ -6,17 +6,18 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('leave_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(LeaveRequest::class, 'leave_request_id')
+                ->nullable()
                 ->constrained()
-                ->cascadeOnDelete();
+                ->nullOnDelete();
             $table->string('action');
             $table->foreignIdFor(Employee::class, 'performed_by')
+                ->nullable()
                 ->constrained()
                 ->cascadeOnDelete();
             $table->json('meta')->nullable();
