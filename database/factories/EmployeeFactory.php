@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Constants\LeaveConstant;
 use App\Enums\RoleEnum;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -18,7 +19,7 @@ class EmployeeFactory extends Factory
             'position' => $this->faker->jobTitle(),
             'manager_id' => null,
             'role' => $this->faker->randomElement(RoleEnum::cases())->value,
-            'leave_balance' => $this->faker->numberBetween(0, 30),
+            'leave_balance' => $this->faker->numberBetween(0, LeaveConstant::TOTAL_ANNUAL),
         ];
     }
 }

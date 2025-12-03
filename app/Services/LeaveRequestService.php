@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Constants\LeaveConstant;
 use App\Constants\LeaveRejectionMessages;
+use App\Constants\TotalAnnualLeaves;
 use App\DataTransferObjects\IndexLeaveRequestOfEmployeeDTO;
 use App\DataTransferObjects\ProcessLeaveRequestDTO;
 use App\DataTransferObjects\StoreLeaveRequestDTO;
@@ -74,6 +76,17 @@ readonly class LeaveRequestService
             ->through($pipelineFilters)
             ->thenReturn()
             ->get();
+    }
+
+    public function getBalanceOfEmployee(int $employeeId): array
+    {
+        $leaveBalance = $this->getLeaveBalanceOfEmployee($employeeId);
+        $totalLeaves = LeaveConstant::TOTAL_ANNUAL - $leaveBalance;
+        return [
+            "employee_id" => $employeeId,
+            "total_leaves" => $totalLeaves,
+            "remaining_balance" => $leaveBalance
+        ];
     }
 
     private function validateBusinessRules(StoreLeaveRequestDTO $data): array
@@ -243,7 +256,12 @@ readonly class LeaveRequestService
         return 0;
     }
 
-    private function getPipelineFilters()
+    private function getLeaveBalanceOfEmployee(int $employeeId)
+    {
+        return Employee::query()->find($employeeId)->leave_balance;
+    }
+
+    private function getPipelineFilters(): array
     {
         return [
             StatusFilter::class
