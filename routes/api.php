@@ -10,10 +10,11 @@ Route::prefix('v1')->group(function () {
         Route::get("", 'index')->name('index');
     });
 
-    Route::prefix('leave-requests')->name('leave-requests.')->controller(LeaveRequestController::class)->group(function (){
-       Route::post('/','store')->name('store') ;
-       Route::post('/{leave}/approve','approve')->name('approve') ;
-       Route::post('/{leave}/reject','reject')->name('reject') ;
-       Route::post('/reports','indexOfEmployee')->name('index-of-employee');
+    Route::prefix('leave-requests')->name('leave-requests.')->controller(LeaveRequestController::class)->group(function () {
+        Route::post('/', 'store')->name('store');
+        Route::post('/{leave}/approve', 'approve')->name('approve');
+        Route::post('/{leave}/reject', 'reject')->name('reject');
+        Route::match(['get', 'post'], '/reports', 'indexOfEmployee')->name('index-of-employee');
+
     });
 });
